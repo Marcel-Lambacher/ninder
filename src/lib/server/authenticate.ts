@@ -1,17 +1,16 @@
 import admin from 'firebase-admin';
-import { FIREBASE_ADMIN_CREDENTIALS } from '$env/static/private';
+import { env } from '$env/dynamic/private';
 import type { RequestEvent } from '@sveltejs/kit';
 
-if (!admin.apps.length) {
-	console.log(FIREBASE_ADMIN_CREDENTIALS);
-	admin.initializeApp({
-		credential: admin.credential.cert(
-			JSON.parse(Buffer.from(FIREBASE_ADMIN_CREDENTIALS, 'base64').toString('utf-8'))
-		)
-	});
-}
-
 export async function authenticate(event: RequestEvent): Promise<string | null> {
+	if (!admin.apps.length) {
+		admin.initializeApp({
+			credential: admin.credential.cert(
+				JSON.parse(Buffer.from(env.FIREBASE_ADMIN_CREDENTIALS, 'base64').toString('utf-8'))
+			)
+		});
+	}
+
 	const authHeader = event.request.headers.get('Authorization');
 
 	if (!authHeader) {

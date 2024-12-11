@@ -1,15 +1,15 @@
 import { json, type RequestEvent, type RequestHandler } from '@sveltejs/kit';
 import pkg from 'pg';
-import { DB_USER, DB_HOST, DB_NAME, DB_PASSWORD, DB_PORT } from '$env/static/private';
+import { env} from '$env/dynamic/private';
 import { authenticate } from '$lib/server/authenticate';
 const { Pool } = pkg;
 
 const pool = new Pool({
-	user: DB_USER,
-	host: DB_HOST,
-	database: DB_NAME,
-	password: DB_PASSWORD,
-	port: parseInt(DB_PORT),
+	user: env.DB_USER,
+	host: env.DB_HOST,
+	database: env.DB_NAME,
+	password: env.DB_PASSWORD,
+	port: parseInt(env.DB_PORT),
 	ssl: {
 		rejectUnauthorized: false
 	}

@@ -7,6 +7,7 @@ on:
 
 jobs:
   build-and-publish:
+    environment: Production
     runs-on: ubuntu-latest
 
     steps:
@@ -20,44 +21,18 @@ jobs:
         with:
           node-version: 18
 
-      - name: Create .env File
+      - name: Create dockerenv File
         run: |
-          echo "DB_USER: ${{ secrets.DB_USER }}" >> .env
-          echo "DB_HOST: ${{ secrets.DB_HOST }}" >> .env
-          echo "DB_NAME: ${{ secrets.DB_NAME }}" >> .env
-          echo "DB_PASSWORD: ${{ secrets.DB_PASSWORD }}" >> .env
-          echo "DB_PORT: ${{ secrets.DB_PORT }}" >> .env
-          echo "FIREBASE_ADMIN_CREDENTIALS: ${{ secrets.FIREBASE_ADMIN_CREDENTIALS }}" >> .env
+          echo "DB_USER=${{ secrets.DB_USER }}" >> dockerenv
+          echo "DB_HOST=${{ secrets.DB_HOST }}" >> dockerenv
+          echo "DB_NAME=${{ secrets.DB_NAME }}" >> dockerenv
+          echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> dockerenv
+          echo "DB_PORT=${{ secrets.DB_PORT }}" >> dockerenv
+          echo "FIREBASE_ADMIN_CREDENTIALS=${{ secrets.FIREBASE_ADMIN_CREDENTIALS }}" >> dockerenv
 
-      - name: Create .env File
-        run: |
-          echo "DB_USER: ${{ secrets.DB_USER }}" >> hello.txt
-          echo "DB_HOST: ${{ secrets.DB_HOST }}" >> hello.txt
-          echo "DB_NAME: ${{ secrets.DB_NAME }}" >> hello.txt
-          echo "DB_PASSWORD: ${{ secrets.DB_PASSWORD }}" >> hello.txt
-          echo "DB_PORT: ${{ secrets.DB_PORT }}" >> hello.txt
-          echo "FIREBASE_ADMIN_CREDENTIALS: ${{ secrets.FIREBASE_ADMIN_CREDENTIALS }}" >> hello.txt
-
-      - name: Log content to the Actions log
-        run: |
-          echo "Logging content to GitHub Actions log:"
-          cat .env
-
-      - name: List files again to confirm .env creation
-        run: |
-          ls -la
-
-      - name: Save file as artifact
-        uses: actions/upload-artifact@v3
-        with:
-          name: env
-          path: hello.txt
-
-   # Install Docker Buildx
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
 
-      # Log in to GitHub Docker Registry
       - name: Log in to GitHub Docker Registry
         uses: docker/login-action@v2
         with:
@@ -75,3 +50,16 @@ jobs:
             --tag $IMAGE_NAME:latest \
             --tag $IMAGE_NAME:$COMMIT_HASH \
             --push .
+
+      - name: Deploy stack to swarm
+        uses: kitconcept/docker-stack-deploy@v1.2.0
+        with:
+          registry: "ghcr.io"
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+          remote_host: ${{ secrets.REMOTE_HOST }}
+          remote_user: ${{ secrets.REMOTE_USER }}
+          remote_private_key: ${{ secrets.REMOTE_PRIVATE_KEY }}
+          stack_file: "./docker-stack.yml"
+          stack_name: "ninder"
+          env_file: "dockerenv"

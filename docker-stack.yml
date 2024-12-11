@@ -1,0 +1,21 @@
+version: "3.3"
+
+services:
+  ninder:
+    image: "ghcr.io/marcel-lambacher/ninder/ninder:817e66e"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.ninder.rule=Host(`ninder.marcel-lambacher.de`)"
+      - "traefik.http.routers.ninder.entrypoints=websecure"
+      - "traefik.http.routers.ninder.tls.certresolver=myresolver"
+    ports:
+      - 3002:3000
+    environment:
+      - DB_USER=${DB_USER}
+      - DB_HOST=${DB_HOST}
+      - DB_NAME=${DB_NAME}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_PORT=${DB_PORT}
+      - FIREBASE_ADMIN_CREDENTIALS=${FIREBASE_ADMIN_CREDENTIALS}
+    deploy:
+      replicas: 1

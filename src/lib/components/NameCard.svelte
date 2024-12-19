@@ -9,14 +9,16 @@
 {#if card}
 	<div
 		use:randombackgroundcolor={card.id}
-		class="flex h-full w-full flex-col items-center justify-center rounded-lg p-4"
+		class="grid h-full w-full grid-rows-3 rounded-lg"
 		class:shadow-xl={shadow}
 	>
-		<h1 use:fittedtext class="w-full text-8xl font-bold text-white">{card.name}</h1>
-		<div class="mb-5 mt-5 flex flex-wrap justify-center text-4xl">
-			{#each card.countries as country}
-				<span class="fi mb-2 ml-1 mr-1 fi-{country.toLowerCase()}"></span>
-			{/each}
+		<div class="row-span-2 w-full content-center overflow-hidden p-2">
+			<h1 use:fittedtext class="w-full text-8xl font-bold text-white">{card.name}</h1>
+			<div class="mb-5 mt-5 flex flex-wrap justify-center text-4xl">
+				{#each card.countries as country}
+					<span class="fi mb-2 ml-1 mr-1 fi-{country.toLowerCase()}"></span>
+				{/each}
+			</div>
 		</div>
 	</div>
 {:else}

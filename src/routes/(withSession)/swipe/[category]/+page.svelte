@@ -110,18 +110,6 @@
 		await client.refetchQueries({ queryKey: ['categories'] });
 	}
 
-	function performSwipe(direction: 'left' | 'top' | 'right') {
-		if ($cardsQuery.data?.length === 0) {
-			return;
-		}
-
-		if ($cardsQuery.isLoading || $cardsQuery.isFetching) {
-			return;
-		}
-
-		swipeableCardStack.swipe(direction);
-	}
-
 	async function onSexChange(sex: 'male' | 'female' | 'all') {
 		client.setQueryData<Card[]>(['cards', country, take], () => []);
 		await client.invalidateQueries({ queryKey: ['cards', country, take] });
@@ -129,10 +117,10 @@
 </script>
 
 <GenericTitleHeader title={m.swipe_header()} />
-<div
-	class="flex h-full w-full flex-col items-center pb-4 pl-4 pr-4 {backgroundColor} background-color-transition"
->
+<div class=" pl-4 pr-4">
 	<SexToggle {onSexChange} />
+</div>
+<div class="relative flex h-full w-full flex-col items-center pb-4 pl-4 pr-4">
 	<div class="mb-4"></div>
 	<SwipeFeedback {swipeFeedbackState} />
 
@@ -148,14 +136,6 @@
 	/>
 
 	<Match bind:this={matchDialog} />
-
-	<div class="mt-4 w-full">
-		<CardActionBar
-			onDislikeButton={() => performSwipe('left')}
-			onLikeButton={() => performSwipe('right')}
-			onSuperLikeButton={() => performSwipe('top')}
-		/>
-	</div>
 </div>
 
 <style>

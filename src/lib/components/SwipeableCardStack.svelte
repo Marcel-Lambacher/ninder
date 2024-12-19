@@ -2,6 +2,7 @@
 	import type { Card } from '$lib/types';
 	import NameCard from './NameCard.svelte';
 	import { pan, type PanEvent } from '../actions/pan';
+	import CardActionBar from '../../routes/(withSession)/swipe/[category]/CardActionBar.svelte';
 
 	type Props = {
 		onSwipeFeedback: (feedbackType: 'left' | 'right' | 'none' | 'top') => void;
@@ -105,4 +106,11 @@
 			</div>
 		{/key}
 	{/each}
+	<div class="absolute flex h-full w-full items-end pb-5">
+		<CardActionBar
+			onDislikeButton={() => swipe('left')}
+			onLikeButton={() => swipe('right')}
+			onSuperLikeButton={() => swipe('top')}
+		/>
+	</div>
 </div>
